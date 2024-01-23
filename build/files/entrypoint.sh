@@ -1,14 +1,15 @@
 #!/bin/bash
 
-##
-## @file        entrypoint.sh
-## @brief       Script for ENTRYPOINT instruction
-## @author      Keitetsu
-## @date        2020/04/13
-## @copyright   Copyright (c) 2020 Keitetsu
-## @par         License
-##              This software is released under the MIT License.
-##
+cleanup () {
+	kill -s SIGTERM $PID_SUB
+	if [ $PORT ];
+	then
+		echo $PORT >> /usr/local/etc/port_pool
+	fi
+	exit 0
+}
+
+trap cleanup SIGINT SIGTERM
 
 CONTAINER_USER=${HOST_USER:-vitis}
 CONTAINER_UID=${HOST_UID:-1000}
@@ -44,6 +45,12 @@ if [[ ${USER_EXISTS} -ne 0 && ${UID_EXISTS} -ne 0 ]]; then
 fi
 
 chown ${CONTAINER_USER} $(tty)
+
+if [ $JUPYTER_ENABLE = "true" ];
+then
+	jupyter lab 2>&1 &
+    PID_SUB=$!
+fi
 
 exec /usr/sbin/gosu "${CONTAINER_USER}" "$@"
 

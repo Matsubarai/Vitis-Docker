@@ -47,6 +47,7 @@ fi
 chown ${CONTAINER_USER} $(tty)
 
 /usr/sbin/gosu "${CONTAINER_USER}" jupyter lab 2>&1 &
+PID_SUB=$!
 
 /usr/sbin/gosu "${CONTAINER_USER}" "$@"
 

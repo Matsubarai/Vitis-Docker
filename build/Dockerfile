@@ -1,24 +1,17 @@
-##
-## @file        Dockerfile
-## @brief       Dockerfile for Vitis
-## @author      Keitetsu
-## @date        2020/04/13
-## @copyright   Copyright (c) 2020 Keitetsu
-## @par         License
-##              This software is released under the MIT License.
-##
+FROM xilinx/xilinx_runtime_base:alveo-2023.2-ubuntu-20.04
 
-FROM ubuntu:18.04
-
-LABEL maintainer="KeitetsuWorks@users.noreply.github.com"
+ARG XILINX_VERSION=2022.2
 
 ##
 ## install Vitis dependencies
 ##
+RUN wget -qO- https://www.xilinx.com/bin/public/openDownload?filename=xilinx-u280-gen3x16-xdma_2022.2_2022_1015_0317-all.deb.tar.gz > deploy.tar.gz && \
+    tar -xzf deploy.tar.gz -C /opt/xilinx/shell && rm deploy.tar.gz
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get upgrade -y -qq && \
     apt-get install -y -qq --no-install-recommends \
+        /opt/xilinx/shell/xilinx*u280*.deb \
         tofrodos \
         iproute2 \
         gawk \
@@ -51,16 +44,22 @@ RUN apt-get update && \
         screen \
         pax \
         gzip \
+        bzip2 \
         python2.7-dev \
         python2.7 \
         python3-dev \
         python3 \
+        pip \
+        procps \
         apt-utils \
         binutils \
         cpio \
         expect \
         file \
+        libfreetype6 \
+        fontconfig \
         fonts-noto-cjk \
+        ttf-wqy-zenhei \
         git \
         gosu \
         lib32z1-dev \
@@ -103,8 +102,6 @@ RUN apt-get update && \
     \
     apt-get clean && \
     apt-get autoclean && \
-    ln -fs /bin/bash /bin/sh && \
-    \
     rm -rf /tmp/* && \
     rm -rf /var/tmp/* && \
     rm -rf /var/cache/* && \
@@ -113,24 +110,16 @@ RUN apt-get update && \
 ##
 ## locale settings
 ##
+ENV TERM=xterm
 RUN locale-gen en_US.UTF-8 && \
     update-locale
 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 
 ##
-## vim settings
+## PYNQ/Jupyter settings
 ##
-RUN cd ~ && \
-    git clone --depth 1 https://github.com/tomasr/molokai.git && \
-    mkdir -p ~/.vim/colors && \
-    mv ./molokai/colors/molokai.vim ~/.vim/colors && \
-    rm -rf ./molokai && \
-    git clone --depth 1 https://github.com/KeitetsuWorks/VimSettings.git && \
-    mv ./VimSettings/.vimrc ~ && \
-    rm -rf ./VimSettings && \
-    sed -i -e "/^colorscheme.*/i set t_Co=256" .vimrc && \
-    cp -r ~/.vim /etc/skel && \
-    cp ~/.vimrc /etc/skel
+RUN pip install jupyter pynq
+EXPOSE 8888
 
 ##
 ## Xilinx Vitis settings
@@ -138,12 +127,9 @@ RUN cd ~ && \
 COPY files/init_vitis.sh /usr/local/bin/init_vitis.sh
 RUN chmod +x /usr/local/bin/init_vitis.sh && \
     echo '. /usr/local/bin/init_vitis.sh' >> /root/.bashrc && \
-    echo '. /usr/local/bin/init_vitis.sh' >> /etc/skel/.bashrc
-
-##
-## make installation directory
-##
-RUN mkdir -p /opt/Xilinx
+    echo '. /opt/xilinx/xrt/setup.sh' >> /root/.bashrc && \
+    echo '. /usr/local/bin/init_vitis.sh' >> /etc/skel/.bashrc && \
+    echo '. /opt/xilinx/xrt/setup.sh' >> /etc/skel/.bashrc
 
 ##
 ## ENTRYPOINT settings

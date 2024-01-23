@@ -46,11 +46,11 @@ fi
 
 chown ${CONTAINER_USER} $(tty)
 
-if [ $JUPYTER_ENABLE = "true" ];
+/usr/sbin/gosu "${CONTAINER_USER}" jupyter lab 2>&1 &
+
+/usr/sbin/gosu "${CONTAINER_USER}" "$@"
+
+if [ $PORT ];
 then
-	jupyter lab 2>&1 &
-    PID_SUB=$!
+	echo $PORT >> /usr/local/etc/port_pool
 fi
-
-exec /usr/sbin/gosu "${CONTAINER_USER}" "$@"
-

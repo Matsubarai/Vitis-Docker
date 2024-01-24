@@ -1,8 +1,8 @@
 #!/bin/bash
-xhost +local:root
 EXC="true"
 PUB="false"
-IMG="ghcr.io/Matsubarai/vitis:${XILINX_VERSION}"
+REPO="ghcr.io/Matsubarai"
+IMG="${REPO}/vitis:${XILINX_VERSION}"
 while getopts ":d:p:i:v:eh" optname
 do
 	case "$optname" in
@@ -12,12 +12,12 @@ do
 		"s")
 			EXC="false"
 			;;
-        "p")
-            PUB="true"
+		"p")
+			PUB="true"
 			EXPOSE_PORT=8888
 			;;
 		"i")
-			IMG="$OPTARG"
+			IMG="$REPO/$OPTARG"
 			;;
 		"v")
 			MNT="$MNT --volume $OPTARG" 
@@ -44,7 +44,7 @@ if [ $MNT ]
 then
 	echo "custom mount point:$MNT"
 fi
-FLAGS="--detach --net host --rm --name $USER-env --runtime=xilinx --env XILINX_VISIBLE_DEVICES=$DEVICE --env XILINX_DEVICE_EXCLUSIVE=$EXC --env TZ=Asia/Shanghai --env DISPLAY=${DISPLAY} --env QT_X11_NO_MITSHM=1 --env NO_AT_BRIDGE=1 --env LIBGL_ALWAYS_INDIRECT=1 --env HOST_USER=${USER} --env HOST_UID=$(id -u ${USER}) --env HOST_GROUP=${USER} --env HOST_GID=$(id -g ${USER}) --volume /tmp/.X11-unix:/tmp/.X11-unix:rw --volume /tools/Xilinx:/tools/Xilinx -v /home/$USER:/data -v /usr/local/etc:/usr/local/etc $MNT"
+FLAGS="--detach --net host --name $USER-env --runtime=xilinx --env XILINX_VISIBLE_DEVICES=$DEVICE --env XILINX_DEVICE_EXCLUSIVE=$EXC --env TZ=Asia/Shanghai --env DISPLAY=${DISPLAY} --env QT_X11_NO_MITSHM=1 --env NO_AT_BRIDGE=1 --env LIBGL_ALWAYS_INDIRECT=1 --env HOST_USER=${USER} --env HOST_UID=$(id -u ${USER}) --env HOST_GROUP=${USER} --env HOST_GID=$(id -g ${USER}) --volume /tmp/.X11-unix:/tmp/.X11-unix:rw --volume /tools/Xilinx:/tools/Xilinx -v /home/$USER:/data -v /usr/local/etc:/usr/local/etc $MNT"
 docker inspect $USER-env > /dev/null 2>&1
 if [ $? -eq 0 ]
 then
@@ -52,6 +52,7 @@ then
 	exit 0
 fi
 
+xhost +local:root
 if [ $PUB = "true" ]
 then
 	PORT=`head -n 1 /usr/local/etc/port_pool`
@@ -72,7 +73,6 @@ else
 	echo "In command-line mode"
 	docker run $FLAGS $IMG sleep infinity
 fi
-
 if [ $? -ne 0 ]
 then
 	if [ $PORT ]
@@ -81,32 +81,10 @@ then
 	fi
 	exit 1
 fi
-
 if [ $DEVICE ]
 then
 	at -f /usr/local/bin/env_dealloc now +2 hours 2>&1 | grep -o '[0-9]\+' | head -1 > /usr/local/etc/timer_id.$USER
 	echo "Device[$DEVICE] will be released after 2 hours."
 fi
 
-docker run \
-    #--interactive \
-    #--tty \
-    --detach \
-    --net host \
-    --rm \
-    --name $USER-env \
-    --env TZ=Asia/Shanghai \
-    --env DISPLAY=${DISPLAY} \
-    --env QT_X11_NO_MITSHM=1 \
-    --env NO_AT_BRIDGE=1 \
-    --env LIBGL_ALWAYS_INDIRECT=1 \
-    --env HOST_USER=${USER} \
-    --env HOST_UID=$(id -u ${USER}) \
-    --env HOST_GROUP=${USER} \
-    --env HOST_GID=$(id -g ${USER}) \
-    --env PORT=${PORT}
-    #--env XILINXD_LICENSE_FILE=/tools/Xilinx/Xilinx.lic \
-    --volume /tmp/.X11-unix:/tmp/.X11-unix:rw \
-    --volume /tools/Xilinx:/tools/Xilinx \
-    ghcr.io/Matsubarai/vitis:${XILINX_VERSION} \
-
+docker exec -it $USER-env -u $UID /bin/bash

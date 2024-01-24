@@ -1,9 +1,10 @@
 #!/bin/bash
+XILINX_VERSION="2022.2"
 EXC="true"
 PUB="false"
-REPO="ghcr.io/Matsubarai"
+REPO="ghcr.io/matsubarai/Vitis-Docker"
 IMG="${REPO}/vitis:${XILINX_VERSION}"
-while getopts ":d:p:i:v:eh" optname
+while getopts ":d:i:v:psh" optname
 do
 	case "$optname" in
 		"d")

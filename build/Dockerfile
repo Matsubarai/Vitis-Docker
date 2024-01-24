@@ -120,6 +120,8 @@ ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 ##
 RUN pip install jupyter pynq
 EXPOSE 8888
+COPY ./jupyter_configs/ /root/.jupyter
+COPY ./jupyter_configs/ /etc/skel/.jupyter
 
 ##
 ## Xilinx Vitis settings

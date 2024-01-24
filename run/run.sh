@@ -45,7 +45,7 @@ if [ $MNT ]
 then
 	echo "custom mount point:$MNT"
 fi
-FLAGS="--detach --net host --name $USER-env --runtime=xilinx --env XILINX_VISIBLE_DEVICES=$DEVICE --env XILINX_DEVICE_EXCLUSIVE=$EXC --env TZ=Asia/Shanghai --env DISPLAY=${DISPLAY} --env QT_X11_NO_MITSHM=1 --env NO_AT_BRIDGE=1 --env LIBGL_ALWAYS_INDIRECT=1 --env HOST_USER=${USER} --env HOST_UID=$(id -u ${USER}) --env HOST_GROUP=${USER} --env HOST_GID=$(id -g ${USER}) --volume /tmp/.X11-unix:/tmp/.X11-unix:rw --volume /tools/Xilinx:/tools/Xilinx -v /home/$USER:/data -v /usr/local/etc:/usr/local/etc $MNT"
+FLAGS="--detach --net host --name $USER-env --runtime=xilinx --env XILINX_VISIBLE_DEVICES=$DEVICE --env XILINX_DEVICE_EXCLUSIVE=$EXC --env XILINX_VERSION=${XILINX_VERSION} --env TZ=Asia/Shanghai --env DISPLAY=${DISPLAY} --env QT_X11_NO_MITSHM=1 --env NO_AT_BRIDGE=1 --env LIBGL_ALWAYS_INDIRECT=1 --env HOST_USER=${USER} --env HOST_UID=$(id -u ${USER}) --env HOST_GROUP=${USER} --env HOST_GID=$(id -g ${USER}) --volume /tmp/.X11-unix:/tmp/.X11-unix:rw --volume /tools/Xilinx:/tools/Xilinx -v /home/$USER:/data -v /usr/local/etc:/usr/local/etc $MNT"
 docker inspect $USER-env > /dev/null 2>&1
 if [ $? -eq 0 ]
 then

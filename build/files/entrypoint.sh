@@ -1,6 +1,7 @@
 #!/bin/bash
 
 cleanup () {
+	kill -s SIGTERM $!
 	kill -s SIGTERM $PID_SUB
 	if [ $PORT ];
 	then

@@ -1,16 +1,6 @@
-#!/bin/bash -eu
-
-##
-## @file        build.sh
-## @brief       Script to build the Docker Image
-## @author      Keitetsu
-## @date        2020/04/13
-## @copyright   Copyright (c) 2020 Keitetsu
-## @par         License
-##              This software is released under the MIT License.
-##
-
+#!/bin/bash
+XILINX_VERSION=2022.2
 docker build \
-    --tag keitetsu/vitis:ubuntu18.04-base \
+    --tag ghcr.io/matsubarai/Vitis-Docker/vitis:${XILINX_VERSION} \
     .
 

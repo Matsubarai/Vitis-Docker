@@ -1,24 +1,14 @@
 #!/bin/bash
-
-##
-## @file        run.sh
-## @brief       Script to run the Vitis Docker Image
-## @author      Keitetsu
-## @date        2020/04/13
-## @copyright   Copyright (c) 2020 Keitetsu
-## @par         License
-##              This software is released under the MIT License.
-##
-
 xhost +local:root
 
 docker run \
-    --interactive \
-    --tty \
+    #--interactive \
+    #--tty \
+    --detach \
     --net host \
     --rm \
     --name vitis \
-    --env TZ=Asia/Tokyo \
+    --env TZ=Asia/Shanghai \
     --env DISPLAY=${DISPLAY} \
     --env QT_X11_NO_MITSHM=1 \
     --env NO_AT_BRIDGE=1 \
@@ -27,8 +17,8 @@ docker run \
     --env HOST_UID=$(id -u ${USER}) \
     --env HOST_GROUP=${USER} \
     --env HOST_GID=$(id -g ${USER}) \
-    --env XILINXD_LICENSE_FILE=/data/Xilinx.lic \
+    #--env XILINXD_LICENSE_FILE=/tools/Xilinx/Xilinx.lic \
     --volume /tmp/.X11-unix:/tmp/.X11-unix:rw \
-    --volume /data1/Software/Xilinx:/data \
-    keitetsu/vitis:ubuntu18.04-v2021.2-1 \
+    --volume /tools/Xilinx:/tools/Xilinx \
+    ghcr.io/Matsubarai/vitis:${XILINX_VERSION} \
 

@@ -91,15 +91,6 @@ RUN apt-get update && \
         parted \
         udev \
         graphviz && \
-    \
-    add-apt-repository ppa:xorg-edgers/ppa && \
-    apt-get update && \
-    apt-get install -y -qq \
-        libgl1-mesa-glx \
-        libgl1-mesa-dri \
-        libgl1-mesa-dev && \
-    add-apt-repository --remove ppa:xorg-edgers/ppa && \
-    \
     apt-get clean && \
     apt-get autoclean && \
     rm -rf /tmp/* && \

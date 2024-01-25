@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cleanup () {
-	kill -s SIGTERM $!
 	kill -s SIGTERM $PID_SUB
+	kill -s SIGTERM $!
 	if [ $PORT ];
 	then
 		echo $PORT >> /usr/local/etc/port_pool
@@ -50,7 +50,7 @@ chown ${CONTAINER_USER} $(tty)
 /usr/sbin/gosu "${CONTAINER_USER}" jupyter lab 2>&1 &
 PID_SUB=$!
 
-/usr/sbin/gosu "${CONTAINER_USER}" "$@"
+/usr/sbin/gosu "${CONTAINER_USER}" "$@" &
 
 if [ $PORT ];
 then

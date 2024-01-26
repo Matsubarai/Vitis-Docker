@@ -30,6 +30,7 @@ RUN apt-get update && \
         socat \
         x11-utils \
         dbus-x11 \
+        libdbus-glib-1-2 \
         xterm \
         autoconf \
         libtool \

@@ -21,6 +21,13 @@ cleanup () {
 
 trap cleanup SIGINT SIGTERM
 
+if [ $PORT ]; then
+	echo "c.NotebookApp.port=$PORT" >> /root/.jupyter/jupyter_notebook_config.py
+ 	echo "c.NotebookApp.port=$PORT" >> /etc/skel/.jupyter/jupyter_notebook_config.py
+	echo "c.ServerApp.port=$PORT" >> /root/.jupyter/jupyter_lab_config.py
+ 	echo "c.ServerApp.port=$PORT" >> /etc/skel/.jupyter/jupyter_lab_config.py
+fi
+
 getent passwd ${CONTAINER_USER} 2>&1 > /dev/null
 USER_EXISTS=$?
 getent passwd ${CONTAINER_UID} 2>&1 > /dev/null

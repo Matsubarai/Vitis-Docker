@@ -4,7 +4,7 @@ EXC="true"
 PUB="false"
 REPO="ghcr.io/matsubarai/Vitis-Docker"
 IMG="${REPO}/vitis:${XILINX_VERSION}"
-while getopts ":d:i:v:psh" optname
+while getopts ":d:i:v:m:psh" optname
 do
 	case "$optname" in
 		"d")
@@ -21,10 +21,13 @@ do
 			IMG="$REPO/$OPTARG"
 			;;
 		"v")
+			XILINX_VERSION=$OPTARG
+			;;
+		"m")
 			MNT="$MNT --volume $OPTARG" 
 			;;
 		"h")
-			echo "USAGE: env_alloc [-d <DeviceID[,...]=NULL>] [-s (NO_EXCLUSION_FLAG)] [-i <IMAGE_NAME>]                    "
+			echo "USAGE: env_alloc [-d <DeviceID[,...]=NULL>] [-s (NO_EXCLUSION_FLAG)] [-p (JUPYTER_ENABLE_FLAG)] [-v <Toolchain=2022.2>] [-i <Image=vitis:base>]"
 			exit 0
 			;;
 		":")
